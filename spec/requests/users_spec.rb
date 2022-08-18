@@ -73,4 +73,12 @@ RSpec.describe User, type: :request do
       expect(response).to have_http_status(:success)
     end
   end
+
+  context 'user is not verified' do
+    it 'will not allow access to app' do
+      get '/current_user'
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
 end
