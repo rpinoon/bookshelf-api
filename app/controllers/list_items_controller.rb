@@ -1,7 +1,8 @@
 class ListItemsController < ApplicationController
   before_action :authenticate_user!
   before_action :get_item, only: [:destroy, :update, :show]
-  before_action :get_list, only: [:to_read, :finished]
+  before_action :get_reading_list, only: [:to_read]
+  before_action :get_finished_list, only: [:finished]
 
   def index
     list_items = ListItem.all
@@ -21,7 +22,7 @@ class ListItemsController < ApplicationController
         list_item: list_item,
       }
     else
-      render json: list_item.errors, status: :unprocessable_entity
+      render json: list_item.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -34,9 +35,10 @@ class ListItemsController < ApplicationController
         list_item: @list_item,
       }
     else
-      render json: @list_item.errors, status: :unprocessable_entity
+      render json: @list_item.errors.full_messages, status: :unprocessable_entity
     end
   end
+
 
   def update
     if @list_item.update(list_item_params)
@@ -46,49 +48,48 @@ class ListItemsController < ApplicationController
         list_item: @list_item,
       }
     else
-      render json: @list_item.errors, status: :unprocessable_entity
+      render json: @list_item.errors.full_messages, status: :unprocessable_entity
     end
   end
 
   def to_read
-    list = @list.where(finish_date: nil)
-    id_array = list.pluck(:book_id)
-    books = Book.where(id: id_array)
-
-    if list
-      render json: {
-        status: 200,
-        user: current_user,
-        list: list,
-        books: books
-      }
-    else
+    if @reading_list.empty?
       render json: {
         status: 404,
         message: 'The reading list is still empty'
       }
-    end
-  end
+    else
+      id_array = @reading_list.pluck(:book_id)
+      books = Book.where(id: id_array)
 
-  def finished
-    list = @list.where.not(finish_date: nil)
-    id_array = list.pluck(:book_id)
-    books = Book.where(id: id_array)
-
-    if list
       render json: {
         status: 200,
         user: current_user,
-        list: list,
+        list: @reading_list,
         books: books
       }
-    else
+    end 
+  end
+
+  def finished
+    if @finished_list.empty?
       render json: {
         status: 404,
         message: "You haven't finished any books yet"
       }
+    else
+      id_array = @finished_list.pluck(:book_id)
+      books = Book.where(id: id_array)
+
+      render json: {
+        status: 200,
+        user: current_user,
+        list: @finished_list,
+        books: books
+      }
     end
   end
+  
   private
   
   def get_item
@@ -99,7 +100,11 @@ class ListItemsController < ApplicationController
     params.require(:list_item).permit(:user_id, :book_id, :rating, :notes, :start_date, :finish_date)
   end
 
-  def get_list
-    @list = current_user.list_items
+  def get_reading_list
+    @reading_list = current_user.list_items.where(finish_date: nil)
+  end
+
+  def get_finished_list
+    @finished_list = current_user.list_items.where.not(finish_date: nil)
   end
 end
