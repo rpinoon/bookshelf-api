@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "Books", type: :request do
   before do
-    user = FactoryBot.create(:user)
-    sign_in(user)
+    @user = FactoryBot.create(:user)
+    sign_in(@user)
 
     @book1 = FactoryBot.create(:book)
     @book2 = FactoryBot.create(:book)
@@ -27,5 +27,16 @@ RSpec.describe "Books", type: :request do
     expect(response).to have_http_status(:success)
     expect(json['title']).to eq(@book2.title)
     expect(json['author']).to eq(@book2.author)
+  end
+
+  it 'returns all unread books' do
+    ListItem.create(user_id: @user.id, book_id: @book3.id)
+
+    get '/discover'
+    json = JSON.parse(response.body)
+
+    expect(response.content_type).to eq("application/json; charset=utf-8")
+    expect(response).to have_http_status(:success)
+    expect(json).not_to include(@book3)
   end
 end
