@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "UserBooks", type: :request do
+RSpec.describe Api::UserBooksController, type: :request do
   context 'success cases' do
     before do
       @user = FactoryBot.create(:user)
@@ -15,7 +15,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'returns index of user_books' do
-      get '/user_books'
+      get '/api/user_books'
       json = JSON.parse(response.body)
   
       expect(response.content_type).to eq("application/json; charset=utf-8")
@@ -24,7 +24,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'returns a specific user_book' do
-      get "/user_books/#{@user_book2.id}"
+      get "/api/user_books/#{@user_book2.id}"
       json = JSON.parse(response.body)
   
       expect(response.content_type).to eq("application/json; charset=utf-8")
@@ -34,7 +34,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'creates a user_book entry' do
-      post '/user_books', params: { user_book: { 
+      post '/api/user_books', params: { user_book: { 
         user_id: @user.id,
         book_id: @book.id
        } }
@@ -46,7 +46,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'removes a user_book' do
-      delete "/user_books/#{@user_book1.id}"
+      delete "/api/user_books/#{@user_book1.id}"
   
       json = JSON.parse(response.body)
       expect(json["status"]).to eq(200)
@@ -54,7 +54,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'marks a user_book as read' do
-      patch "/user_books/#{@user_book2.id}", params: { user_book: { finish_date: Time.now } }
+      patch "/api/user_books/#{@user_book2.id}", params: { user_book: { finish_date: Time.now } }
   
       json = JSON.parse(response.body)
       expect(json["status"]).to eq(200)
@@ -62,7 +62,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'marks a user_book as unread' do
-      patch "/user_books/#{@user_book2.id}", params: { user_book: { finish_date: nil } }
+      patch "/api/user_books/#{@user_book2.id}", params: { user_book: { finish_date: nil } }
   
       json = JSON.parse(response.body)
       expect(json["status"]).to eq(200)
@@ -70,7 +70,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'updates the rating of a user_book' do
-      patch "/user_books/#{@user_book1.id}", params: { user_book: { rating: 2 } }
+      patch "/api/user_books/#{@user_book1.id}", params: { user_book: { rating: 2 } }
   
       json = JSON.parse(response.body)
       
@@ -80,7 +80,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'updates the notes of a user_book' do
-      patch "/user_books/#{@user_book1.id}", params: { user_book: { notes: "This is a good read" } }
+      patch "/api/user_books/#{@user_book1.id}", params: { user_book: { notes: "This is a good read" } }
   
       json = JSON.parse(response.body)
       expect(json["status"]).to eq(200)
@@ -89,7 +89,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'shows all books marked to be read' do
-      get "/to_read"
+      get "/api/to_read"
       json = JSON.parse(response.body)
   
       expect(json["status"]).to eq(200)
@@ -98,7 +98,7 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'shows all books marked as finished' do
-      get "/finished"
+      get "/api/finished"
       json = JSON.parse(response.body)
 
       expect(json["status"]).to eq(200)
@@ -118,7 +118,7 @@ RSpec.describe "UserBooks", type: :request do
 
     
     it 'will notify if reading list is empty' do
-      get "/to_read"
+      get "/api/to_read"
       json = JSON.parse(response.body)
 
       expect(json["status"]).to eq(404)
@@ -126,28 +126,29 @@ RSpec.describe "UserBooks", type: :request do
     end
   
     it 'will notify if finished list is empty' do
-      get "/finished"
+      get "/api/finished"
       json = JSON.parse(response.body)
   
       expect(json["status"]).to eq(404)
       expect(json["message"]).to eq("You haven't finished any books yet")
     end
 
-    it 'will not create if user already has the book' do
+    it 'will not duplicate if user already has the book' do
       UserBook.create(user_id: @book_less_user.id, book_id: @book.id)
 
-      post '/user_books', params: { user_book: { 
-        user_id: @book_less_user.id,
-        book_id: @book.id
-       } }
-       json = JSON.parse(response.body)
-
-       expect(response).to have_http_status(:unprocessable_entity)
-       expect(json[0]).to eq("Book has already been taken")
+      expect {UserBook.create(user_id: @book_less_user.id, book_id: @book.id).to raise_error(ActiveRecord::RecordNotUnique)}
+      # post '/api/user_books', params: { user_book: { 
+      #   user_id: @book_less_user.id,
+      #   book_id: @book.id
+      #  } }
+      #  json = JSON.parse(response.body)
+      #   debugger
+      #  expect(response).to have_http_status(:unprocessable_entity)
+      #  expect(json[0]).to eq("Book has already been taken")
     end
 
     it 'will not update with incorrect rating value' do
-      patch "/user_books/#{@user_book.id}", params: { user_book: { rating: 6 } }
+      patch "/api/user_books/#{@user_book.id}", params: { user_book: { rating: 6 } }
       json = JSON.parse(response.body)
 
       expect(response).to have_http_status(:unprocessable_entity)
