@@ -7,7 +7,8 @@ class Api::UserBooksController < ApplicationController
     if books.empty?
       render json: {errors: "List is empty"}, status: unprocessable_entity
     else
-      render json: books
+      options = { include: [:book] }
+      render json: UserBookSerializer.new(books, options).serializable_hash
     end
   end
 
