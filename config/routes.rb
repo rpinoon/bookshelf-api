@@ -6,8 +6,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :user_books
-    get '/to_read', to: 'user_books#to_read'
-    get '/finished', to: 'user_books#finished'
   end
 
   devise_for :users, path: '', path_names: {
