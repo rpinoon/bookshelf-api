@@ -19,7 +19,6 @@ class Api::UserBooksController < ApplicationController
     user_book = UserBook.create(user_book_params)
     if user_book.save
       render json: {
-        status: 201,
         message: 'Successfully created!',
         user_book: user_book,
       }
@@ -30,11 +29,8 @@ class Api::UserBooksController < ApplicationController
 
   def destroy
     if @user_book.destroy!
-
       render json: {
-        status: 200,
         message: 'Successfully removed!',
-        user_book: @user_book,
       }
     else
       render json: @user_book.errors.full_messages, status: :unprocessable_entity
@@ -45,7 +41,6 @@ class Api::UserBooksController < ApplicationController
   def update
     if @user_book.update(user_book_params)
       render json: {
-        status: 200,
         message: 'Successfully updated!',
         user_book: @user_book,
       }
