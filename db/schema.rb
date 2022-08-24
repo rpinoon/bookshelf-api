@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_24_075806) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_24_092627) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,16 +25,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_24_075806) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "list_items", force: :cascade do |t|
+  create_table "user_books", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "book_id", null: false
-    t.integer "rating", default: -1
-    t.string "notes"
     t.date "start_date"
     t.date "finish_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id", "book_id"], name: "index_list_items_on_user_id_and_book_id", unique: true
+    t.integer "rating", default: 0
+    t.text "notes"
+    t.index ["user_id", "book_id"], name: "index_user_books_on_user_id_and_book_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -51,6 +51,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_24_075806) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  add_foreign_key "list_items", "books"
-  add_foreign_key "list_items", "users"
+  add_foreign_key "user_books", "books"
+  add_foreign_key "user_books", "users"
 end
