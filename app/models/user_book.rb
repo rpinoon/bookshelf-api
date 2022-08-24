@@ -6,6 +6,6 @@ class UserBook < ApplicationRecord
   validates :book_id, presence: true
   validates :rating, presence: true, inclusion: 0..5
 
-  scope :to_read, ->(user) { Book.where(id: where(finish_date: nil, user_id: user).pluck(:book_id)) }
-  scope :finished, ->(user) { Book.where(id: where.not(finish_date: nil, user_id: user).pluck(:book_id))}
+  scope :to_read, ->(user) {where(finish_date: nil, user_id: user)}
+  scope :finished, ->(user) { where.not(finish_date: nil, user_id: user)}
 end
