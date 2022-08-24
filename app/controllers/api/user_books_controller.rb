@@ -5,7 +5,7 @@ class Api::UserBooksController < ApplicationController
   def index
     books = params[:finish_date] == nil ? UserBook.to_read(current_user) : UserBook.finished(current_user)
     if books.empty?
-      render json: "List is empty", status: unprocessable_entity
+      render json: {errors: "List is empty"}, status: unprocessable_entity
     else
       render json: books
     end
@@ -16,14 +16,14 @@ class Api::UserBooksController < ApplicationController
   end
 
   def create
-    user_book = UserBook.create(user_book_params)
+    user_book = current_user.user_books.create(user_book_params)
     if user_book.save
       render json: {
         message: 'Successfully created!',
         user_book: user_book,
       }
     else
-      render json: user_book.errors.full_messages, status: :unprocessable_entity
+      render json: {errors: user_book.errors}, status: :unprocessable_entity
     end
   end
 
@@ -33,7 +33,7 @@ class Api::UserBooksController < ApplicationController
         message: 'Successfully removed!',
       }
     else
-      render json: @user_book.errors.full_messages, status: :unprocessable_entity
+      render json: {errors: @user_book.errors.full_messages}, status: :unprocessable_entity
     end
   end
 
@@ -45,7 +45,7 @@ class Api::UserBooksController < ApplicationController
         user_book: @user_book,
       }
     else
-      render json: @user_book.errors.full_messages, status: :unprocessable_entity
+      render json: {errors: @user_book.errors.full_messages}, status: :unprocessable_entity
     end
   end
   
