@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :list_item do
+  factory :user_book do
     user
     book
     rating { Faker::Number.between(from: 1, to: 5) }

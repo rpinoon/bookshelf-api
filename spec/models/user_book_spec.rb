@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe ListItem, type: :model do
-  subject {FactoryBot.create(:list_item)}
+RSpec.describe UserBook, type: :model do
+  subject {FactoryBot.create(:user_book)}
 
 
-  context 'list item validations' do
+  context 'user book validations' do
     it 'is not valid without a user' do
       subject.user = nil
       expect(subject).to_not be_valid
@@ -25,17 +25,17 @@ RSpec.describe ListItem, type: :model do
       expect(subject).to_not be_valid
     end
 
-    it 'rating should not be zero' do
-      subject.rating = 0
+    it 'rating should not be a negative number' do
+      subject.rating = -1
       expect(subject).to_not be_valid
     end
 
-    it 'will create a valid list item' do
+    it 'will create a valid user book' do
       expect(subject).to be_valid
     end
   end
 
-  context 'list item associations' do
+  context 'user book associations' do
     it 'belongs to user' do
       should respond_to(:user)
     end
@@ -49,19 +49,19 @@ RSpec.describe ListItem, type: :model do
     before do
       user = FactoryBot.create(:user)
       book = FactoryBot.create(:book)
-      @list_item = ListItem.create(user_id: user.id, book_id: book.id)
+      @user_book = UserBook.create(user_id: user.id, book_id: book.id)
     end
 
-    it 'should have default rating of -1' do
-      expect(@list_item.rating).to eq(-1)
+    it 'should have default rating of 0' do
+      expect(@user_book.rating).to eq(0)
     end
     
     it 'should have default start_date of nil' do
-      expect(@list_item.start_date).to eq(nil)
+      expect(@user_book.start_date).to eq(nil)
     end
 
     it 'should have default finish_date of nil' do
-      expect(@list_item.finish_date).to eq(nil)
+      expect(@user_book.finish_date).to eq(nil)
     end
   end
 end

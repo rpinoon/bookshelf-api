@@ -1,54 +1,54 @@
-class ListItemsController < ApplicationController
+class UserBooksController < ApplicationController
   before_action :authenticate_user!
-  before_action :get_item, only: [:destroy, :update, :show]
+  before_action :get_user_book, only: [:destroy, :update, :show]
   before_action :get_reading_list, only: [:to_read]
   before_action :get_finished_list, only: [:finished]
 
   def index
-    list_items = ListItem.all
-    render json: list_items
+    user_books = UserBook.all
+    render json: user_books
   end
 
   def show
-    render json: @list_item
+    render json: @user_book
   end
 
   def create
-    list_item = ListItem.create(list_item_params)
-    if list_item.save
+    user_book = UserBook.create(user_book_params)
+    if user_book.save
       render json: {
         status: 201,
         message: 'Successfully created!',
-        list_item: list_item,
+        user_book: user_book,
       }
     else
-      render json: list_item.errors.full_messages, status: :unprocessable_entity
+      render json: user_book.errors.full_messages, status: :unprocessable_entity
     end
   end
 
   def destroy
-    if @list_item.destroy!
+    if @user_book.destroy!
 
       render json: {
         status: 200,
         message: 'Successfully removed!',
-        list_item: @list_item,
+        user_book: @user_book,
       }
     else
-      render json: @list_item.errors.full_messages, status: :unprocessable_entity
+      render json: @user_book.errors.full_messages, status: :unprocessable_entity
     end
   end
 
 
   def update
-    if @list_item.update(list_item_params)
+    if @user_book.update(user_book_params)
       render json: {
         status: 200,
         message: 'Successfully updated!',
-        list_item: @list_item,
+        user_book: @user_book,
       }
     else
-      render json: @list_item.errors.full_messages, status: :unprocessable_entity
+      render json: @user_book.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -92,19 +92,19 @@ class ListItemsController < ApplicationController
   
   private
   
-  def get_item
-    @list_item = ListItem.find(params[:id])
+  def get_user_book
+    @user_book = UserBook.find(params[:id])
   end
 
-  def list_item_params 
-    params.require(:list_item).permit(:user_id, :book_id, :rating, :notes, :start_date, :finish_date)
+  def user_book_params 
+    params.require(:user_book).permit(:user_id, :book_id, :rating, :notes, :start_date, :finish_date)
   end
 
   def get_reading_list
-    @reading_list = current_user.list_items.where(finish_date: nil)
+    @reading_list = current_user.user_books.where(finish_date: nil)
   end
 
   def get_finished_list
-    @finished_list = current_user.list_items.where.not(finish_date: nil)
+    @finished_list = current_user.user_books.where.not(finish_date: nil)
   end
 end
