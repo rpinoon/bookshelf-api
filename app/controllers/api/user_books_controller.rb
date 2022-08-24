@@ -56,6 +56,6 @@ class Api::UserBooksController < ApplicationController
   end
 
   def user_book_params 
-    params.require(:user_book).permit(:user_id, :book_id, :rating, :notes, :start_date, :finish_date)
+    params.require(:user_book).permit(:book_id, :rating, :notes, :start_date, :finish_date)
   end
 end
