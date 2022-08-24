@@ -5,7 +5,7 @@ class Api::UserBooksController < ApplicationController
   def index
     books = params[:finish_date] == nil ? UserBook.to_read(current_user) : UserBook.finished(current_user)
     if books.empty?
-      render json: {errors: "List is empty"}, status: unprocessable_entity
+      render json: {errors: "List is empty"}, status: :unprocessable_entity
     else
       options = { include: [:book] }
       render json: UserBookSerializer.new(books, options).serializable_hash
