@@ -41,7 +41,7 @@ RSpec.describe Api::UserBooksController, type: :request do
   
       json = JSON.parse(response.body)
   
-      expect(json["status"]).to eq(201)
+      expect(response).to have_http_status(:success)
       expect(json["message"]).to eq('Successfully created!')
     end
   
@@ -49,7 +49,7 @@ RSpec.describe Api::UserBooksController, type: :request do
       delete "/api/user_books/#{@user_book1.id}"
   
       json = JSON.parse(response.body)
-      expect(json["status"]).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(json["message"]).to eq('Successfully removed!')
     end
   
@@ -57,7 +57,7 @@ RSpec.describe Api::UserBooksController, type: :request do
       patch "/api/user_books/#{@user_book2.id}", params: { user_book: { finish_date: Time.now } }
   
       json = JSON.parse(response.body)
-      expect(json["status"]).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(json["message"]).to eq('Successfully updated!')
     end
   
@@ -65,7 +65,7 @@ RSpec.describe Api::UserBooksController, type: :request do
       patch "/api/user_books/#{@user_book2.id}", params: { user_book: { finish_date: nil } }
   
       json = JSON.parse(response.body)
-      expect(json["status"]).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(json["message"]).to eq('Successfully updated!')
     end
   
@@ -74,7 +74,7 @@ RSpec.describe Api::UserBooksController, type: :request do
   
       json = JSON.parse(response.body)
       
-      expect(json["status"]).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(json["message"]).to eq('Successfully updated!')
       expect(json['user_book']['rating']).to eq(2)
     end
@@ -83,27 +83,27 @@ RSpec.describe Api::UserBooksController, type: :request do
       patch "/api/user_books/#{@user_book1.id}", params: { user_book: { notes: "This is a good read" } }
   
       json = JSON.parse(response.body)
-      expect(json["status"]).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(json["message"]).to eq('Successfully updated!')
       expect(json['user_book']['notes']).to eq("This is a good read")
     end
   
     it 'shows all books marked to be read' do
-      get "/api/to_read"
+      get "/api/user_books"
       json = JSON.parse(response.body)
   
-      expect(json["status"]).to eq(200)
-      expect(json["user"]["id"]).to eq(@user.id)
-      expect(json["list"][0]["book_id"]).to eq(@book1.id)
+      expect(response).to have_http_status(:success)
+      expect(json["data"][0]["attributes"]["user_id"]).to eq(@user.id)
+      expect(json["data"][0]["attributes"]["book_id"]).to eq(@book1.id)
     end
   
     it 'shows all books marked as finished' do
-      get "/api/finished"
+      get "/api/user_books", params: { finish_date: Time.now}
       json = JSON.parse(response.body)
 
-      expect(json["status"]).to eq(200)
-      expect(json["user"]["id"]).to eq(@user.id)
-      expect(json["list"][0]["book_id"]).to eq(@book2.id)
+      expect(response).to have_http_status(:success)
+      expect(json["data"][0]["attributes"]["user_id"]).to eq(@user.id)
+      expect(json["data"][0]["attributes"]["book_id"]).to eq(@book2.id)
     end
   end
 
@@ -113,46 +113,38 @@ RSpec.describe Api::UserBooksController, type: :request do
       sign_in @book_less_user
 
       @book = FactoryBot.create(:book)
-      @user_book = FactoryBot.create(:user_book)
     end
 
     
     it 'will notify if reading list is empty' do
-      get "/api/to_read"
+      get "/api/user_books"
       json = JSON.parse(response.body)
 
-      expect(json["status"]).to eq(404)
-      expect(json["message"]).to eq('The reading list is still empty')
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json["errors"]).to eq("List is empty")
     end
   
     it 'will notify if finished list is empty' do
-      get "/api/finished"
+      get "/api/user_books", params: { finish_date: 'Time.now'}
       json = JSON.parse(response.body)
-  
-      expect(json["status"]).to eq(404)
-      expect(json["message"]).to eq("You haven't finished any books yet")
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json["errors"]).to eq("List is empty")
     end
 
     it 'will not duplicate if user already has the book' do
       UserBook.create(user_id: @book_less_user.id, book_id: @book.id)
 
       expect {UserBook.create(user_id: @book_less_user.id, book_id: @book.id).to raise_error(ActiveRecord::RecordNotUnique)}
-      # post '/api/user_books', params: { user_book: { 
-      #   user_id: @book_less_user.id,
-      #   book_id: @book.id
-      #  } }
-      #  json = JSON.parse(response.body)
-      #   debugger
-      #  expect(response).to have_http_status(:unprocessable_entity)
-      #  expect(json[0]).to eq("Book has already been taken")
     end
 
     it 'will not update with incorrect rating value' do
+      @user_book = FactoryBot.create(:user_book)
       patch "/api/user_books/#{@user_book.id}", params: { user_book: { rating: 6 } }
       json = JSON.parse(response.body)
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(json[0]).to eq("Rating is not included in the list")
+      expect(json["errors"][0]).to eq("Rating is not included in the list")
     end
   end
 end
