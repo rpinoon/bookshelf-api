@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :jwt_authenticatable, jwt_revocation_strategy: self, :authentication_keys => [:username]
   
-  has_many :list_items
+  has_many :list_items, dependent: :destroy
   has_many :books, through: :list_items
   
   validates :username, presence: true, uniqueness: true
