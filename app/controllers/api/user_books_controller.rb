@@ -1,4 +1,4 @@
-class UserBooksController < ApplicationController
+class Api::UserBooksController < ApplicationController
   before_action :authenticate_user!
   before_action :get_user_book, only: [:destroy, :update, :show]
   before_action :get_reading_list, only: [:to_read]

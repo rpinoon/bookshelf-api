@@ -1,4 +1,4 @@
-class BooksController < ApplicationController
+class Api::BooksController < ApplicationController
   before_action :authenticate_user!
   before_action :get_book, except: [:index, :discover]
 
