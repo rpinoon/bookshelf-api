@@ -8,4 +8,6 @@ class UserBook < ApplicationRecord
 
   scope :to_read, ->(user) {where(finish_date: nil, user_id: user)}
   scope :finished, ->(user) { where.not(finish_date: nil, user_id: user)}
+  # scope :to_read, ->(user) {where(finish_date: nil)}
+  # scope :finished, ->(user) { where.not(finish_date: nil)}
 end
