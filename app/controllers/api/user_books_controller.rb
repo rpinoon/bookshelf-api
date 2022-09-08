@@ -3,7 +3,7 @@ class Api::UserBooksController < ApplicationController
   before_action :get_user_book, only: [:destroy, :update, :show]
 
   def index
-    books = params[:finish_date] == nil ? UserBook.to_read(current_user) : UserBook.finished(current_user)
+    books = UserBooks::QueryService.new({finish_date: params[:finish_date], user: current_user}).search
 
     render json: serialize_data(books)
   end
