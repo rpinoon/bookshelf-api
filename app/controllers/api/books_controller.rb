@@ -4,7 +4,7 @@ class Api::BooksController < ApplicationController
 
   def index
     books = Book.all
-    render json: BookSerializer.new(books).serializable_hash
+    render json: BookSerializer.new(books).serializable_hash[:data].pluck(:attributes)
   end
 
   def show
@@ -12,7 +12,7 @@ class Api::BooksController < ApplicationController
   end
 
   def discover
-    id_array = ListItem.pluck(:book_id)
+    id_array = current_user.user_books.pluck(:book_id)
     books = Book.where.not(id: id_array)
 
     render json: books

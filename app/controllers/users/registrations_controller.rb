@@ -4,7 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
-      render json: { data: UserSerializer.new(resource).serializable_hash[:data][:attributes] }
+      render json: UserSerializer.new(resource).serializable_hash[:data][:attributes]
     else
       render json: {
         errors: resource.errors

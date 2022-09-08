@@ -4,25 +4,18 @@ class Api::UserBooksController < ApplicationController
 
   def index
     books = params[:finish_date] == nil ? UserBook.to_read(current_user) : UserBook.finished(current_user)
-    if books.empty?
-      render json: {errors: "List is empty"}, status: :unprocessable_entity
-    else
-      options = { include: [:book] }
-      render json: UserBookSerializer.new(books, options).serializable_hash
-    end
+
+    render json: serialize_data(books)
   end
 
   def show
-    render json: @user_book
+    render json: serialize_data(@user_book)
   end
 
   def create
     user_book = current_user.user_books.create(user_book_params)
     if user_book.save
-      render json: {
-        message: 'Successfully created!',
-        user_book: user_book,
-      }
+      render json: serialize_data(user_book)
     else
       render json: {errors: user_book.errors}, status: :unprocessable_entity
     end
@@ -30,23 +23,18 @@ class Api::UserBooksController < ApplicationController
 
   def destroy
     if @user_book.destroy!
-      render json: {
-        message: 'Successfully removed!',
-      }
+      render json: {}
     else
-      render json: {errors: @user_book.errors.full_messages}, status: :unprocessable_entity
+      render json: {errors: @user_book.errors}, status: :unprocessable_entity
     end
   end
 
 
   def update
     if @user_book.update(user_book_params)
-      render json: {
-        message: 'Successfully updated!',
-        user_book: @user_book,
-      }
+      render json: serialize_data(@user_book)
     else
-      render json: {errors: @user_book.errors.full_messages}, status: :unprocessable_entity
+      render json: {errors: @user_book.errors}, status: :unprocessable_entity
     end
   end
   
@@ -58,5 +46,10 @@ class Api::UserBooksController < ApplicationController
 
   def user_book_params 
     params.require(:user_book).permit(:book_id, :rating, :notes, :start_date, :finish_date)
+  end
+
+  def serialize_data(data)
+    options = { include: [:book] }
+    return UserBookSerializer.new(data, options).serializable_hash[:included].pluck(:attributes)
   end
 end

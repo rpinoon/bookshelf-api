@@ -3,12 +3,12 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def respond_with(resource, _opts = {})
-    render json: { data: UserSerializer.new(resource).serializable_hash[:data][:attributes] }
+    render json: UserSerializer.new(resource).serializable_hash[:data][:attributes]
   end
 
   def respond_to_on_destroy
     render json: {
-      errors: resource.errors
-    }, status: :unprocessable_entity
+      message: "logged out successfully"
+    }, status: 200
   end
 end
