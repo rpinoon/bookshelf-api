@@ -5,7 +5,7 @@ class Api::UserBooksController < ApplicationController
   def index
     books = UserBooks::QueryService.new({finish_date: params[:finish_date], user: current_user}).search
 
-    render json: serialize_data(books)
+    render json: books
   end
 
   def show
@@ -50,6 +50,6 @@ class Api::UserBooksController < ApplicationController
 
   def serialize_data(data)
     options = { include: [:book] }
-    return UserBookSerializer.new(data, options).serializable_hash[:included].pluck(:attributes)
+    return UserBookSerializer.new(data, options).serializable_hash[:data].pluck(:attributes)
   end
 end
