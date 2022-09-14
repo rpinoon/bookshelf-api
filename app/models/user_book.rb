@@ -10,4 +10,6 @@ class UserBook < ApplicationRecord
   scope :finished, ->(user) { where.not(finish_date: nil, user_id: user)}
   # scope :to_read, ->(user) {where(finish_date: nil)}
   # scope :finished, ->(user) { where.not(finish_date: nil)}
+
+  delegate :author, :title, :synopsis, :cover_image_url, :publisher, to: :book
 end
