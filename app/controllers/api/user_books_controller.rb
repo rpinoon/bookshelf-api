@@ -9,13 +9,13 @@ class Api::UserBooksController < ApplicationController
   end
 
   def show
-    render json: serialize_data(@user_book)
+    render json: serialize(@user_book)
   end
 
   def create
     user_book = current_user.user_books.create(user_book_params)
     if user_book.save
-      render json: serialize_data(user_book)
+      render json: serialize(user_book)
     else
       render json: {errors: user_book.errors}, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class Api::UserBooksController < ApplicationController
 
   def update
     if @user_book.update(user_book_params)
-      render json: serialize_data(@user_book)
+      render json: serialize(@user_book)
     else
       render json: {errors: @user_book.errors}, status: :unprocessable_entity
     end
@@ -49,7 +49,10 @@ class Api::UserBooksController < ApplicationController
   end
 
   def serialize_data(data)
-    options = { include: [:book] }
-    return UserBookSerializer.new(data, options).serializable_hash[:data].pluck(:attributes)
+    return UserBookSerializer.new(data).serializable_hash[:data].pluck(:attributes)
   end
-end
+  
+  def serialize(data)
+    return UserBookSerializer.new(data).serializable_hash[:data][:attributes]
+  end
+end 
