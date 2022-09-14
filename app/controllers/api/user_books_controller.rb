@@ -50,6 +50,6 @@ class Api::UserBooksController < ApplicationController
 
   def serialize_data(data)
     options = { include: [:book] }
-    return UserBookSerializer.new(data, options).serializable_hash[:included].pluck(:attributes)
+    return UserBookSerializer.new(data, options).serializable_hash[:data].pluck(:attributes)
   end
 end

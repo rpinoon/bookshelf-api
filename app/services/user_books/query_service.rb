@@ -7,11 +7,7 @@ module UserBooks
     end
 
     def search
-      if @finish_date
-        return UserBook.finished(@user)
-      else
-        return UserBook.to_read(@user)
-      end
+      @finish_date ? UserBook.finished(@user) : UserBook.to_read(@user)
     end
 
     private
