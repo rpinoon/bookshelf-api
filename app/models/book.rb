@@ -6,4 +6,6 @@ class Book < ApplicationRecord
   validates :author, presence: true
   validates :publisher, presence: true
   validates :cover_image_url, presence: true
+
+  alias_attribute :book_id, :id
 end

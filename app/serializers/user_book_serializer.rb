@@ -1,6 +1,6 @@
 class UserBookSerializer
   include FastJsonapi::ObjectSerializer
-  attributes :id, 
+  attributes :user_book_id, 
               :user_id, 
               :book_id, 
               :rating, 

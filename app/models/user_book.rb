@@ -12,4 +12,5 @@ class UserBook < ApplicationRecord
   # scope :finished, ->(user) { where.not(finish_date: nil)}
 
   delegate :author, :title, :synopsis, :cover_image_url, :publisher, to: :book
+  alias_attribute :user_book_id, :id
 end
