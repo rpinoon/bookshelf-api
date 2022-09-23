@@ -10,7 +10,7 @@ RSpec.describe User, type: :request do
 
       expect(response.content_type).to eq("application/json; charset=utf-8")
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(json['status']['message']).to eq("User couldn't be created successfully. Username can't be blank")
+      expect(json['errors']['username'][0]).to eq("can't be blank")
     end
 
     it 'will not sign up without password' do
@@ -20,7 +20,8 @@ RSpec.describe User, type: :request do
 
       expect(response.content_type).to eq("application/json; charset=utf-8")
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(json['status']['message']).to eq("User couldn't be created successfully. Password can't be blank and Password is too short (minimum is 6 characters)")
+      expect(json['errors']['password'][0]).to eq("can't be blank")
+      expect(json['errors']['password'][1]).to eq("is too short (minimum is 6 characters)")
     end
 
     it 'will not sign up if password is less than 6 characters' do
@@ -30,7 +31,7 @@ RSpec.describe User, type: :request do
 
       expect(response.content_type).to eq("application/json; charset=utf-8")
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(json['status']['message']).to eq("User couldn't be created successfully. Password is too short (minimum is 6 characters)")
+      expect(json['errors']['password'][0]).to eq("is too short (minimum is 6 characters)")
     end
     
     it 'will sign up with correct details' do
@@ -40,7 +41,6 @@ RSpec.describe User, type: :request do
 
       expect(response.content_type).to eq("application/json; charset=utf-8")
       expect(response).to have_http_status(:success)
-      expect(json['status']['message']).to eq("Signed up sucessfully.")
     end
   end
 
@@ -76,7 +76,7 @@ RSpec.describe User, type: :request do
 
   context 'user is not verified' do
     it 'will not allow access to app' do
-      get '/current_user'
+      get '/api/current_user'
 
       expect(response).to have_http_status(:unauthorized)
     end

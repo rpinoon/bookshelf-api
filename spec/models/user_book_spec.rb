@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UserBook, type: :model do
+RSpec.describe UserBooks, type: :model do
   subject {FactoryBot.create(:user_book)}
 
 
