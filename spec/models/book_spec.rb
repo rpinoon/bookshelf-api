@@ -28,9 +28,5 @@ RSpec.describe Book, type: :model do
     it 'has many users through list items' do
       should respond_to(:users)
     end
-
-    it 'has many list items' do
-      should respond_to(:list_items)
-    end
   end
 end

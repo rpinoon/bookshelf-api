@@ -35,8 +35,8 @@ RSpec.describe User, type: :model do
       should respond_to(:books)
     end
 
-    it 'has many list items' do
-      should respond_to(:list_items)
+    it 'has many user books' do
+      should respond_to(:user_books)
     end
   end
 end
