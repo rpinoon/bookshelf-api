@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe UserBooks, type: :model do
-  subject {FactoryBot.create(:user_book)}
-
+  subject { FactoryBot.create(:user_book) }
 
   context 'user book validations' do
     it 'is not valid without a user' do
@@ -55,7 +56,7 @@ RSpec.describe UserBooks, type: :model do
     it 'should have default rating of 0' do
       expect(@user_book.rating).to eq(0)
     end
-    
+
     it 'should have default start_date of nil' do
       expect(@user_book.start_date).to eq(nil)
     end

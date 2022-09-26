@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameListItemsToUserBooks < ActiveRecord::Migration[7.0]
   def change
     remove_column :list_items, :rating, :integer, default: -1

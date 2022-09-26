@@ -1,14 +1,19 @@
-class Users::SessionsController < Devise::SessionsController
-  respond_to :json
-  private
+# frozen_string_literal: true
 
-  def respond_with(resource, _opts = {})
-    render json: UserSerializer.new(resource).serializable_hash[:data][:attributes]
-  end
+module Users
+  class SessionsController < Devise::SessionsController
+    respond_to :json
 
-  def respond_to_on_destroy
-    render json: {
-      message: "logged out successfully"
-    }, status: 200
+    private
+
+    def respond_with(resource, _opts = {})
+      render json: UserSerializer.new(resource).serializable_hash[:data][:attributes]
+    end
+
+    def respond_to_on_destroy
+      render json: {
+        message: 'logged out successfully'
+      }, status: 200
+    end
   end
 end

@@ -1,30 +1,34 @@
-class Api::BooksController < ApplicationController
-  before_action :authenticate_user!
-  before_action :get_book, except: [:index, :discover]
+# frozen_string_literal: true
 
-  def index
-    books = Book.all
-    render json: serialize(books)
-  end
+module Api
+  class BooksController < ApplicationController
+    before_action :authenticate_user!
+    before_action :get_book, except: %i[index discover]
 
-  def show
-    render json: @book
-  end
+    def index
+      books = Book.all
+      render json: serialize(books)
+    end
 
-  def discover
-    id_array = current_user.user_books.pluck(:book_id)
-    books = Book.where.not(id: id_array)
+    def show
+      render json: @book
+    end
 
-    render json: serialize(books)
-  end
+    def discover
+      id_array = current_user.user_books.pluck(:book_id)
+      books = Book.where.not(id: id_array)
 
-  private
+      render json: serialize(books)
+    end
 
-  def get_book
-    @book = Book.find(params[:id])
-  end
+    private
 
-  def serialize(data)
-    return BookSerializer.new(data).serializable_hash[:data].pluck(:attributes)
+    def get_book
+      @book = Book.find(params[:id])
+    end
+
+    def serialize(data)
+      BookSerializer.new(data).serializable_hash[:data].pluck(:attributes)
+    end
   end
 end

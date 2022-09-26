@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module UserBooks
   class QueryService
-
     def initialize(params)
       @finish_date = params[:finish_date]
       @user = params[:user]
