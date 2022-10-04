@@ -11,7 +11,7 @@ RSpec.describe "Books", type: :request do
   end
 
   it 'returns all books' do
-    get '/books'
+    get '/api/books'
     json = JSON.parse(response.body)
 
     expect(response.content_type).to eq("application/json; charset=utf-8")
@@ -20,7 +20,7 @@ RSpec.describe "Books", type: :request do
   end
 
   it 'returns a specific book' do
-    get '/book', params: { id: @book2.id }
+    get '/api/book', params: { id: @book2.id }
     json = JSON.parse(response.body)
 
     expect(response.content_type).to eq("application/json; charset=utf-8")
@@ -30,9 +30,9 @@ RSpec.describe "Books", type: :request do
   end
 
   it 'returns all unread books' do
-    ListItem.create(user_id: @user.id, book_id: @book3.id)
+    UserBook.create(user_id: @user.id, book_id: @book3.id)
 
-    get '/discover'
+    get '/api/discover'
     json = JSON.parse(response.body)
 
     expect(response.content_type).to eq("application/json; charset=utf-8")
